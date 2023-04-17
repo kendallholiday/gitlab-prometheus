@@ -16,7 +16,7 @@ webhook_event_counter = metrics.counter(
 )
 
 commit_counter = metrics.counter(
-    "commit_counter", "Number of commits", labels=["git_project_id"]
+    "commit_counter", "Number of commits", labels={"git_project_id": lambda: ""} # Initialize an empty lambda function for the label
 )
 
 @app.route('/', methods=['GET'])
@@ -34,6 +34,13 @@ def get_post():
             commit_counter.labels(git_project_id=git_project_id).inc()
     elif 'build' == request.json['object_kind']:
         parsed_data = build_parse.parse_build_data(build_data=request.json)
+        if parsed_data.build_failure_reason == "script_failure":
+            # Handle script_failure case
+            pass
+        elif parsed_data.build_failure_reason == "some_other_reason":
+            # Handle some_other_reason case
+            pass
+
     else:
         print(request.json)
         return request.json
