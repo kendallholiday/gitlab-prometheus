@@ -4,17 +4,17 @@ import gitlab_parse
 from gitlab_parse import build_parse, push_parse
 from flask import Flask, json, request
 from prometheus_flask_exporter import PrometheusMetrics
-# Removed the import for update_prometheus_metrics
 
 app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 
-# Add this metric for counting webhook events
+def event_type(request_obj):
+    return request_obj.json.get("object_kind")
+
 webhook_event_counter = metrics.counter(
-    'webhook_events', 'Number of webhook events received', labels=['event_type']
+    'webhook_events', 'Number of webhook events received', labels={'event_type': lambda: event_type(request)}
 )
 
-# Moved the commit_counter to main.py and updated the label
 commit_counter = metrics.counter(
     "commit_counter", "Number of commits", labels=["git_project_id"]
 )
@@ -24,20 +24,16 @@ def hello():
     return 'Yes Running'
 
 @app.post('/gitlab')
-@app.post('/gitlab')
 def get_post():
-    # ... (the existing code)
+    webhook_event_counter.labels().inc()
     
     if "push" == request.json["object_kind"]:
         parsed_data = push_parse.parse_push_data(push_data=request.json)
-        # Update Prometheus metrics based on the parsed data
-        for commit_event in parsed_data["nr_commit_array"]:
+        for commit_event in parsed_data["gl_commit_array"]:
             git_project_id = commit_event["git_project_id"]
             commit_counter.labels(git_project_id=git_project_id).inc()
     elif 'build' == request.json['object_kind']:
         parsed_data = build_parse.parse_build_data(build_data=request.json)
-        # Update Prometheus metrics based on the parsed data
-        build_parse.update_prometheus_metrics(parsed_data)
     else:
         print(request.json)
         return request.json
