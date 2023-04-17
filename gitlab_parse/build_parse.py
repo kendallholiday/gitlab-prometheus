@@ -4,11 +4,11 @@ from prometheus_client import Counter
 
 def parse_build_data(build_data):
 
-    nr_event={}
-    nr_event['eventType'] = 'gitlabBuildEvent'
+    gl_event={}
+    gl_event['eventType'] = 'gitlabBuildEvent'
     # ... (the existing code)
 
-    return nr_event
+    return gl_event
 
 build_events = Counter('gitlab_build_events', 'Number of GitLab build events', ['event_type'])
 
