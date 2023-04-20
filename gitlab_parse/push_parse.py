@@ -46,6 +46,5 @@ def parse_push_data(push_data):
 
     #print(nr_event)
     prom_write.increment_event_counter(nr_event['eventType'])
-for commit_event in nr_commit_array:
-    prom_write.increment_event_counter(commit_event['eventType'])
-    #print(nr_commit_array)
+    for commit_event in nr_commit_array:
+        prom_write.increment_event_counter(commit_event['eventType'])
