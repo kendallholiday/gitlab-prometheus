@@ -2,7 +2,7 @@ import json
 from prom_gldb import prom_write
 from prom_gldb.prom_write import increment_event_counter
 
-def parse_build_data(build_data, license_key, account_id):
+def parse_build_data(build_data):
 
     #print(build_data)
 
@@ -40,4 +40,4 @@ def parse_build_data(build_data, license_key, account_id):
             nr_event[item] = build_data[item]
 
     #print(nr_event)
-    prom_write.write_data(nr_event, license_key,account_id=account_id)
+    prom_write.write_data(nr_event)

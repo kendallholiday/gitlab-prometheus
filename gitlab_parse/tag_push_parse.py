@@ -3,7 +3,7 @@ from prom_gldb.prom_write import increment_event_counter
 from prom_gldb import prom_write
 
 
-def parse_tag_push_data(tag_push_data, license_key, account_id):
+def parse_tag_push_data(tag_push_data):
     # print(tag_push_data)
 
     nr_event = {}
@@ -31,4 +31,4 @@ def parse_tag_push_data(tag_push_data, license_key, account_id):
             nr_event[item] = tag_push_data[item]
 
     #print(nr_event)
-    prom_write.write_data(nr_event, license_key, account_id=account_id)
+    prom_write.write_data(nr_event)

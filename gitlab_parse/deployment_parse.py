@@ -26,4 +26,4 @@ def parse_deployment_data(deployment_data, license_key, account_id):
             nr_event[item] = deployment_data[item]
 
     #print(nr_event)
-    prom_write.write_data(nr_event, license_key, account_id=account_id)
+    prom_write.write_data(nr_event)

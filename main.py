@@ -16,25 +16,20 @@ def hello():
 @app.post('/gitlab')
 def get_post():
     #print(request.json)
-    header_data = request.headers['X-Gitlab-Token']
-    key_account = header_data.split('-nr-')
-    license_key = key_account[0]
-    account_id =  key_account[1]
-    #print(':' + license_key + ':' + account_id)
     print(request.json['object_kind'])
 
     if 'push' == request.json['object_kind']:
-        push_parse.parse_push_data(push_data=request.json, license_key=license_key, account_id=account_id)
+        push_parse.parse_push_data(push_data=request.json)
     elif 'build' == request.json['object_kind']:
-        build_parse.parse_build_data(build_data=request.json, license_key=license_key, account_id=account_id)
+        build_parse.parse_build_data(build_data=request.json)
     elif 'pipeline' == request.json['object_kind']:
-        pipeline_parse.parse_pipeline_data(pipeline_data=request.json, license_key=license_key, account_id=account_id)
+        pipeline_parse.parse_pipeline_data(pipeline_data=request.json)
     elif 'deployment' == request.json['object_kind']:
-        deployment_parse.parse_deployment_data(deployment_data=request.json, license_key=license_key, account_id=account_id)
+        deployment_parse.parse_deployment_data(deployment_data=request.json)
     elif 'tag_push' == request.json['object_kind']:
-        tag_push_parse.parse_tag_push_data(tag_push_data=request.json, license_key=license_key, account_id=account_id)
+        tag_push_parse.parse_tag_push_data(tag_push_data=request.json)
     elif 'release' == request.json['object_kind']:
-        release_parse.parse_release_data(release_data=request.json, license_key=license_key, account_id=account_id)
+        release_parse.parse_release_data(release_data=request.json)
     else:
         print(request.json)
 

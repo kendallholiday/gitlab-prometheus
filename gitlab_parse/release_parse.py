@@ -2,7 +2,7 @@ import json
 from prom_gldb.prom_write import increment_event_counter
 from prom_gldb import prom_write
 
-def parse_release_data(release_data, license_key, account_id):
+def parse_release_data(release_data):
     # print(release_data)
     nr_event={}
     nr_event['eventType'] = 'gitlabreleaseEvent'
@@ -57,7 +57,7 @@ def parse_release_data(release_data, license_key, account_id):
 
 
     #print(nr_event)
-    prom_write.write_data(nr_event, license_key, account_id=account_id)
+    prom_write.write_data(nr_event)
     print(source_array)
-    prom_write.write_data(source_array, license_key, account_id=account_id)
+    prom_write.write_data(source_array)
     return {"result": "success"}
