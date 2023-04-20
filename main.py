@@ -1,4 +1,4 @@
-import prom_gldb.prom_write
+import threading
 from prom_gldb import prom_write
 import json
 import os
@@ -37,6 +37,11 @@ def get_post():
 
     return request.json
 
+def start_prom_server():
+    prom_write.start_http_server(8000)
+
+t = threading.Thread(target=start_prom_server)
+t.start()
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5001, debug=True, ssl_context='adhoc', threaded=True)
