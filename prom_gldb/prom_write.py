@@ -21,6 +21,6 @@ def write_data(data):
     
 if __name__ == '__main__':
     # Start the HTTP server to expose metrics
-    start_http_server(8000)
+    start_http_server(8001)
     while True:
         time.sleep(1)
