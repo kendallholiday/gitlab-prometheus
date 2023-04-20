@@ -1,25 +1,43 @@
 import json
-from prometheus_client import Counter
+from prom_gldb import prom_write
+from prom_gldb.prom_write import increment_event_counter
 
-class BuildData:
-    def __init__(self, build_data):
-        self.build_queued_duration = build_data.get("build_queued_duration", None)
-        self.build_failure_reason = build_data.get("build_failure_reason", None)
-        self.commit_detail_author_url = build_data.get("commit_detail_author_url", None)
-        self.commit_detail_duration = build_data.get("commit_detail_duration", None)
+def parse_build_data(build_data, license_key, account_id):
 
-def parse_build_data(build_data):
-    build_data_obj = BuildData(build_data)
+    #print(build_data)
 
+    nr_event={}
+    nr_event['eventType'] = 'gitlabBuildEvent'
+    increment_event_counter(nr_event['eventType'])
 
-    gl_event={}
-    gl_event['eventType'] = 'gitlabBuildEvent'
-    # ... (the existing code)
-    return gl_event
+    global_project_id = build_data['project_id']
+    nr_event['git_project_id'] = global_project_id
+    nr_build_array = []
 
-build_events = Counter('gitlab_build_events', 'Number of GitLab build events', ['event_type'])
+    for item in build_data:
+        if 'runner' == item:
 
-def update_prometheus_metrics(parsed_data):
-    event_type = parsed_data['eventType']
-    build_events.labels(event_type=event_type).inc()
+            try:
+                for r_item in build_data['runner']:
+                    fix_project = 'runner_detail_' + r_item
+                    nr_event[fix_project] = build_data['runner'][r_item]
+            except:
+                pass
+                nr_event['runner_detail_empty'] = 'empty'
 
+        elif 'commit' == item:
+
+            for c_item in build_data['commit']:
+                fix_project = 'commit_detail_' + c_item
+                nr_event[fix_project] = build_data['commit'][c_item]
+
+        elif 'repository' == item:
+
+            for r_item in build_data['repository']:
+                fix_project = 'repository_detail_' + r_item
+                nr_event[fix_project] = build_data['repository'][r_item]
+        else:
+            nr_event[item] = build_data[item]
+
+    #print(nr_event)
+    prom_write.write_data(nr_event, license_key,account_id=account_id)

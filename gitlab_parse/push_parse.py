@@ -1,49 +1,51 @@
 import json
+from prom_gldb.prom_write import increment_event_counter
+from prom_gldb import prom_write
+
+def parse_push_data(push_data, license_key, account_id):
+    # print(push_data)
+    nr_event={}
+    nr_event['eventType'] = 'gitlabPushEvent'
+    increment_event_counter(nr_event['eventType'])
+    global_project_id = push_data['project_id']
+    nr_event['git_project_id'] = global_project_id
+
+    nr_commit_array = []
+
+    for item in push_data:
+
+        #Flatten the Project Detail
+
+        if 'project' == item:
+
+            for p_item in push_data['project']:
+                fix_project = 'project_detail_' + p_item
+                nr_event[fix_project] = push_data['project'][p_item]
+
+        elif 'commits' == item:
+
+            nr_commit_event = {}
+            for c_item in push_data['commits']:
+                nr_commit_event = {}
+                nr_commit_event['eventType'] = 'gitlabPushCommitEvent'
+                nr_commit_event['git_project_id'] = global_project_id
+                for c_detail in c_item:
+                    nr_commit_event[c_detail] = c_item[c_detail]
+            nr_commit_array.append(nr_commit_event)
 
 
+        elif 'repository' == item:
 
-class PushData:
-    def __init__(self, push_data):
-        self.project_detail_ci_config_path = push_data.get("project_detail_ci_config_path", None)
-        self.project_detail_ci_config_path = push_data.get("project_detail_ci_config_path", None)
-        self.project_detail_default_branch = push_data.get("project_detail_default_branch", None)
-        self.project_detail_description = push_data.get("project_detail_description", None)
-        self.project_detail_visibility_level = push_data.get("project_detail_visibility_level", None)
-        self.repository_detail_description = push_data.get("repository_detail_description", None)
-        self.repository_detail_visibility_level = push_data.get("repository_detail_visibility_level", None)
+            for r_item in push_data['repository']:
+                fix_project = 'repository_detail_' + r_item
+                nr_event[fix_project] = push_data['project'][r_item]
 
-def parse_push_data(push_data):
-    push_data_obj = PushData(push_data)
+        else:
+            nr_event[item] = push_data[item]
 
-    gl_event = {
-        "project_id": push_data["project"]["id"],
-        "project_name": push_data["project"]["name"],
-        "ref": push_data["ref"],
-        "before_sha": push_data["before"],
-        "after_sha": push_data["after"],
-        "total_commits_count": push_data["total_commits_count"]
-    }
 
-    gl_commit_array = []
-
-    for commit in push_data["commits"]:
-        gl_commit = {
-            "commit_id": commit["id"],
-            "message": commit["message"],
-            "author_name": commit["author"]["name"],
-            "author_email": commit["author"]["email"],
-            "timestamp": commit["timestamp"],
-            "url": commit["url"],
-            "added": commit["added"],
-            "modified": commit["modified"],
-            "removed": commit["removed"],
-            "git_project_id": push_data["project"]["id"]
-        }
-        gl_commit_array.append(gl_commit)
-
-    return {
-        "gl_event": gl_event,
-        "gl_commit_array": gl_commit_array,
-        "result": "success"
-    }
-
+    #print(nr_event)
+    prom_write.write_data(nr_event, license_key, account_id=account_id)
+    #print(nr_commit_array)
+    prom_write.write_data(nr_commit_array, license_key, account_id=account_id)
+    return {"result": "success"}
