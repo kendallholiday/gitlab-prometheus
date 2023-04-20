@@ -16,6 +16,7 @@ def hello():
 @app.post('/gitlab')
 def get_post():
     #print(request.json)
+    print("Received event:", request.json)
     print(request.json['object_kind'])
 
     if 'push' == request.json['object_kind']:

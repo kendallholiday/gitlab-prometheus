@@ -7,6 +7,7 @@ gitlab_events_total = Counter('gitlab_events_total', 'Total number of GitLab eve
 
 
 def increment_event_counter(event_type):
+    print("Incrementing event counter for", event_type)
     gitlab_events_total.labels(event_type=event_type).inc()
 
 def write_data(data):
