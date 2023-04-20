@@ -3,7 +3,7 @@ from prom_gldb.prom_write import increment_event_counter
 from prom_gldb import prom_write
 
 
-def parse_deployment_data(deployment_data, license_key, account_id):
+def parse_deployment_data(deployment_data):
     # print(deployment_data)
 
     nr_event = {}
@@ -26,4 +26,4 @@ def parse_deployment_data(deployment_data, license_key, account_id):
             nr_event[item] = deployment_data[item]
 
     #print(nr_event)
-    prom_write.write_data(nr_event)
+    prom_write.increment_event_counter(nr_event['eventType'])

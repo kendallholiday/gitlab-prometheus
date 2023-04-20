@@ -40,4 +40,4 @@ def parse_build_data(build_data):
             nr_event[item] = build_data[item]
 
     #print(nr_event)
-    prom_write.write_data(nr_event)
+    prom_write.increment_event_counter(nr_event['eventType'])

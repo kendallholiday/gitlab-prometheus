@@ -57,7 +57,6 @@ def parse_release_data(release_data):
 
 
     #print(nr_event)
-    prom_write.write_data(nr_event)
-    print(source_array)
-    prom_write.write_data(source_array)
-    return {"result": "success"}
+    prom_write.increment_event_counter(nr_event['eventType'])
+    for source_event in source_array:
+        prom_write.increment_event_counter(source_event['eventType'])

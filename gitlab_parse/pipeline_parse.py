@@ -46,6 +46,6 @@ def parse_pipeline_data(pipeline_data):
     
     
     #print(nr_event)
-    prom_write.write_data(nr_event)
-    #print(nr_pipeline_array)
-    prom_write.write_data(nr_pipeline_array)
+    prom_write.increment_event_counter(nr_event['eventType'])
+    for pipeline_event in nr_pipeline_array:
+        prom_write.increment_event_counter(pipeline_event['eventType'])
