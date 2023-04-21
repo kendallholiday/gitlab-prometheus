@@ -39,7 +39,7 @@ def get_post():
     return request.json
 
 def start_prom_server():
-    prom_write.start_http_server(8000)
+    prom_write.start_http_server(8001)
 
 t = threading.Thread(target=start_prom_server)
 t.start()
